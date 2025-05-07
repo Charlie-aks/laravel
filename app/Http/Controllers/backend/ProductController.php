@@ -1,0 +1,269 @@
+<?php
+
+namespace App\Http\Controllers\backend;
+
+use App\Http\Controllers\Controller;
+use App\Models\Brand;
+use App\Models\Category;
+use App\Models\Product;
+use App\Models\Productsale;
+use App\Models\Productimage;
+use App\Models\Productstore;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
+use App\Http\Requests\StoreProductRequest;
+
+class ProductController extends Controller
+{
+    public function index()
+    {
+        $list = Product::select(
+            'product.id',
+            'product.name',
+            'category.name as categoryname',
+            'brand.name as brandname',
+            'product.status',
+            'productimage.thumbnail',
+            'product.price_root',
+            'productsale.price_sale',
+            'productstore.qty'
+        )
+        ->join('category', 'product.category_id', '=', 'category.id')
+        ->join('brand', 'product.brand_id', '=', 'brand.id')
+        ->leftJoin('productimage', 'product.id', '=', 'productimage.product_id')
+        ->leftJoin('productsale', 'product.id', '=', 'productsale.product_id')
+        ->leftJoin('productstore', 'product.id', '=', 'productstore.product_id')
+        ->orderBy('product.created_at', 'desc')
+        ->paginate(5);
+
+        return view('backend.product.index', ['list' => $list]);
+    }
+
+    public function create()
+    {
+        $list_category = Category::select('name', 'id')->orderBy('sort_order', 'asc')->get();
+        $list_brand = Brand::select('name', 'id')->orderBy('sort_order', 'asc')->get();
+        return view('backend.product.create', compact('list_category', 'list_brand'));
+    }
+
+    public function store(StoreProductRequest $request)
+    {
+        $slug = Str::slug($request->name);
+        $originalSlug = $slug;
+        $counter = 1;
+        while (Product::where('slug', $slug)->exists()) {
+            $slug = $originalSlug . '-' . $counter++;
+        }
+
+        $product = new Product();
+        $product->name = $request->name;
+        $product->detail = $request->detail;
+        $product->description = $request->description;
+        $product->price_root = $request->price_root;
+        $product->status = $request->status;
+        $product->category_id = $request->category_id;
+        $product->brand_id = $request->brand_id;
+        $product->slug = $slug;
+        $product->created_by = Auth::id() ?? 1;
+        $product->save();
+
+        if($request->hasFile('thumbnail')) {
+            $file = $request->file('thumbnail');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('assets/images/product'), $filename);
+
+            ProductImage::create([
+                'product_id' => $product->id,
+                'thumbnail' => $filename,
+            ]);
+        }
+
+        ProductStore::create([
+            'product_id' => $product->id,
+            'qty' => $request->qty,
+            'price_root' => $product->price_root,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        if ($request->has('price_sale')) {
+            ProductSale::create([
+                'product_id' => $product->id,
+                'price_sale' => $request->price_sale,
+                'date_begin' => now(),
+                'date_end' => now()->addDays(30),
+                'created_by' => Auth::id() ?? 1,
+            ]);
+        }
+
+        return redirect()->route('product.index')->with('success', 'Sản phẩm đã được thêm thành công!');
+    }
+
+    public function edit(string $id)
+    {
+        $product = Product::find($id);
+        $list_category = Category::select('name', 'id')->orderBy('sort_order', 'asc')->get();
+        $list_brand = Brand::select('name', 'id')->orderBy('sort_order', 'asc')->get();
+        return view('backend.product.edit', compact('list_category', 'list_brand', 'product'));
+    }
+
+    public function update(Request $request, string $id)
+    {
+        $product = Product::find($id);
+        $slug = Str::slug($request->name);
+
+        $product->name = $request->name;
+        $product->detail = $request->detail;
+        $product->description = $request->description;
+        $product->price_root = $request->price_root;
+        $product->status = $request->status;
+        $product->category_id = $request->category_id;
+        $product->brand_id = $request->brand_id;
+        $product->slug = $slug;
+        $product->updated_by = Auth::id() ?? 1;
+        $product->updated_at = now();
+        $product->save();
+
+        // Cập nhật hình ảnh
+        if($request->hasFile('thumbnail')) {
+            $file = $request->file('thumbnail');
+            $filename = $slug . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path('assets/images/product'), $filename);
+
+            $productImage = ProductImage::where('product_id', $product->id)->first();
+            if ($productImage) {
+                $oldImagePath = public_path('assets/images/product/' . $productImage->thumbnail);
+                if (File::exists($oldImagePath)) {
+                    File::delete($oldImagePath);
+                }
+                $productImage->thumbnail = $filename;
+                $productImage->save();
+            } else {
+                ProductImage::create([
+                    'product_id' => $product->id,
+                    'thumbnail' => $filename,
+                ]);
+            }
+        }
+
+        // Cập nhật ProductStore
+        $productStore = ProductStore::where('product_id', $id)->first();
+        if ($productStore) {
+            $productStore->qty = $request->qty;
+            $productStore->price_root = $product->price_root;
+            $productStore->updated_at = now();
+            $productStore->save();
+        }
+
+        // Cập nhật hoặc tạo mới ProductSale
+        if ($request->has('price_sale')) {
+            $productSale = ProductSale::where('product_id', $id)->first();
+            if ($productSale) {
+                $productSale->price_sale = $request->price_sale;
+                $productSale->updated_at = now();
+                $productSale->save();
+            } else {
+                ProductSale::create([
+                    'product_id' => $id,
+                    'price_sale' => $request->price_sale,
+                    'date_begin' => now(),
+                    'date_end' => now()->addDays(30),
+                    'created_by' => Auth::id() ?? 1,
+                ]);
+            }
+        }
+
+        return redirect()->route('product.index')->with('success', 'Cập nhật sản phẩm thành công!');
+    }
+
+    public function destroy(string $id)
+    {
+        $product = Product::onlyTrashed()->find($id);
+        if (!$product) return redirect()->route('product.trash');
+
+        // Xoá ảnh vật lý
+        $image = ProductImage::where('product_id', $product->id)->first();
+        if ($image && File::exists(public_path('assets/images/product/' . $image->thumbnail))) {
+            File::delete(public_path('assets/images/product/' . $image->thumbnail));
+        }
+
+        // Xoá các bản ghi liên quan
+        ProductImage::where('product_id', $product->id)->forceDelete();
+        ProductStore::where('product_id', $product->id)->forceDelete();
+        ProductSale::where('product_id', $product->id)->forceDelete();
+
+        // Xoá sản phẩm
+        $product->forceDelete();
+
+        return redirect()->route('product.trash')->with('success', 'Sản phẩm đã bị xóa vĩnh viễn!');
+    }
+
+    public function delete($id)
+    {
+        $product = Product::find($id);
+        if (!$product) return redirect()->route('product.index');
+
+        // Xóa ảnh vật lý
+        $image = ProductImage::where('product_id', $id)->first();
+        if ($image && File::exists(public_path('assets/images/product/' . $image->thumbnail))) {
+            File::delete(public_path('assets/images/product/' . $image->thumbnail));
+        }
+
+        // Xoá các bản ghi liên quan
+        ProductImage::where('product_id', $id)->delete();
+        ProductStore::where('product_id', $id)->delete();
+        ProductSale::where('product_id', $id)->delete();
+
+        $product->delete(); // Soft delete
+
+        return redirect()->route('product.index')->with('success', 'Sản phẩm đã được đưa vào thùng rác!');
+    }
+
+    public function trash()
+    {
+        $list = Product::onlyTrashed()
+            ->select(
+                'product.id',
+                'product.name',
+                'category.name as categoryname',
+                'brand.name as brandname',
+                'product.status',
+                'productimage.thumbnail',
+                'product.price_root',
+                'productsale.price_sale',
+                'productstore.qty'
+            )
+            ->join('category', 'product.category_id', '=', 'category.id')
+            ->join('brand', 'product.brand_id', '=', 'brand.id')
+            ->leftJoin('productimage', 'product.id', '=', 'productimage.product_id')
+            ->leftJoin('productsale', 'product.id', '=', 'productsale.product_id')
+            ->leftJoin('productstore', 'product.id', '=', 'productstore.product_id')
+            ->orderBy('product.created_at', 'desc')
+            ->paginate(5);
+
+        return view('backend.product.trash', ['list' => $list]);
+    }
+
+    public function restore($id)
+    {
+        $product = Product::onlyTrashed()->find($id);
+        if ($product) {
+            $product->restore();
+        }
+        return redirect()->route('product.trash');
+    }
+
+    public function status($id)
+    {
+        $product = Product::find($id);
+        if ($product) {
+            $product->status = $product->status == 1 ? 0 : 1;
+            $product->updated_by = Auth::id() ?? 1;
+            $product->updated_at = now();
+            $product->save();
+        }
+        return redirect()->route('product.index');
+    }
+}
