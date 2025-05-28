@@ -114,7 +114,8 @@
                             <label id="thumbnail">
                                 <strong>Hình ảnh</strong>
                             </label>
-                            <input type="file" class="w-full border border-gray-300 rounded-lg p-2" name="thumbnail" id="thumbnail">
+                            <input type="file" class="w-full border border-gray-300 rounded-lg p-2" name="thumbnail[]" id="thumbnail" multiple accept="image/*">
+                            <div id="image-preview" class="mt-2 grid grid-cols-4 gap-2"></div>
                             @if($errors->has('thumbnail'))
                                 <div class="text-red-500">{{$errors->first('thumbnail')}}</div>
                             @endif

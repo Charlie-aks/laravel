@@ -25,6 +25,7 @@ use App\Http\Controllers\AuthController;
 use App\Models\Feedback;
 use App\Http\Controllers\frontend\CheckoutController;
 use App\Http\Controllers\frontend\PaymentController;
+use App\Http\Controllers\backend\StatisticController;
 
 Route::get('/',[HomeController::class, 'index'])->name('site.home');
 Route::get('/san-pham',[SanphamProduct::class, 'index'])->name('site.product');
@@ -32,6 +33,9 @@ Route::get('/san-pham/tim-kiem',[SanphamProduct::class, 'search'])->name('site.p
 Route::get('/san-pham/{slug}',[SanphamProduct::class, 'detail'])->name('site.product.detail');
 Route::get('/lien-he',[LienHeContact::class, 'index'])->name('site.contact');
 Route::get('/gio-hang',[CartController::class,'index'])->name('site.cart');
+// Routes cho bài viết
+Route::get('/bai-viet', [App\Http\Controllers\frontend\PostController::class, 'index'])->name('site.post.index');
+Route::get('/bai-viet/{slug}', [App\Http\Controllers\frontend\PostController::class, 'show'])->name('site.post.show');
 // Route cho giỏ hàng
 Route::post('/cart/add', [CartController::class, 'addToCart'])->name('cart.addToCart');
 Route::post('/cart/remove', [CartController::class, 'removeFromCart'])->name('cart.removeFromCart');
@@ -54,6 +58,7 @@ Route::prefix('admin')->group(function() {
         Route::get('delete/{product}',[ProductController::class,'delete'])->name('product.delete');
         Route::get('restore/{product}',[ProductController::class,'restore'])->name('product.restore');
         Route::get('status/{product}',[ProductController::class,'status'])->name('product.status');
+        Route::get('search',[ProductController::class,'search'])->name('product.search');
     });
     Route::resource('product',ProductController::class);
 
@@ -110,6 +115,7 @@ Route::prefix('admin')->group(function() {
         Route::get('delete/{post}',[PostController::class,'delete'])->name('post.delete');
         Route::get('restore/{post}',[PostController::class,'restore'])->name('post.restore');
         Route::get('status/{post}',[PostController::class,'status'])->name('post.status');
+        Route::get('search',[PostController::class,'search'])->name('post.search');
     });
     Route::resource('post',PostController::class);
 
@@ -137,8 +143,16 @@ Route::prefix('admin')->group(function() {
     });
     Route::resource('feedback',FeedbackController::class);
 
+    // Routes cho bài viết
+    Route::get('/post', [PostController::class, 'index'])->name('post.index');
+    Route::get('/post/create', [PostController::class, 'create'])->name('post.create');
+    Route::post('/post/store', [PostController::class, 'store'])->name('post.store');
+    Route::get('/post/edit/{post}', [PostController::class, 'edit'])->name('post.edit');
+    Route::put('/post/update/{post}', [PostController::class, 'update'])->name('post.update');
+    Route::delete('/post/delete/{post}', [PostController::class, 'destroy'])->name('post.delete');
+    Route::get('/post/status/{post}', [PostController::class, 'status'])->name('post.status');
 
-
+    Route::delete('/admin/product/image/{id}', [ProductController::class, 'deleteImage'])->name('product.image.delete');
 }); 
 
 Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
@@ -146,6 +160,20 @@ Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.s
 
 Route::post('/payment/create', [PaymentController::class, 'createPayment'])->name('payment.create');
 Route::get('/payment/return', [PaymentController::class, 'returnPayment'])->name('payment.return');
+
+Route::get('/chinh-sach-doi-tra', [App\Http\Controllers\frontend\ReturnPolicyController::class, 'index'])->name('return.policy');
+Route::get('/chinh-sach-van-chuyen', [App\Http\Controllers\frontend\ShippingPolicyController::class, 'index'])->name('shipping.policy');
+Route::get('/chinh-sach-bao-hanh', [App\Http\Controllers\frontend\WarrantyPolicyController::class, 'index'])->name('warranty.policy');
+
+Route::get('/huong-dan-mua-hang', [App\Http\Controllers\frontend\BuyingGuideController::class, 'index'])->name('buying.guide');
+
+// Google Login Routes
+Route::get('auth/google', [App\Http\Controllers\Auth\GoogleController::class, 'redirectToGoogle'])->name('google.login');
+Route::get('auth/google/callback', [App\Http\Controllers\Auth\GoogleController::class, 'handleGoogleCallback'])->name('google.callback');
+
+// Facebook Login Routes
+Route::get('auth/facebook', [App\Http\Controllers\Auth\FacebookController::class, 'redirectToFacebook'])->name('facebook.login');
+Route::get('auth/facebook/callback', [App\Http\Controllers\Auth\FacebookController::class, 'handleFacebookCallback'])->name('facebook.callback');
 
 
 

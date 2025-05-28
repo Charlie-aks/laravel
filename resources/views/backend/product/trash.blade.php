@@ -28,11 +28,13 @@
                     @forelse ($list as $item)
                         <tr>
                             <td class="border border-gray-300 p-2 text-center">
-                                @if ($item->thumbnail)
-                                    <img src="{{ asset('assets/images/product/' . $item->thumbnail) }}" class="w-20 h-20 object-cover rounded-md mx-auto" alt="Ảnh sản phẩm">
-                                @else
-                                    <span class="text-gray-400 italic">Không có ảnh</span>
-                                @endif
+                                <div class="flex flex-wrap gap-1 justify-center">
+                                    @foreach($item->productimage as $image)
+                                        <img src="{{ asset('assets/images/product/' . $image->thumbnail) }}" 
+                                             class="w-20 h-20 object-cover rounded-md" 
+                                             alt="Ảnh sản phẩm">
+                                    @endforeach
+                                </div>
                             </td>
                             <td class="border border-gray-300 p-2">{{ $item->name }}</td>
                             <td class="border border-gray-300 p-2">{{ $item->categoryname }}</td>

@@ -43,7 +43,52 @@
             @include('components.product-card', ['product' => $product])
           @endforeach
         </div>
+
+        {{-- Phân trang --}}
+        <div class="mt-10">
+          {{ $product_list->links() }}
+        </div>
       @endif
     </section>
   </main>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const categorySelect = document.getElementById('category-select');
+      const brandSelect = document.getElementById('brand-select');
+      let categoryValue = categorySelect.value;
+      let brandValue = brandSelect.value;
+
+      function updateFilters() {
+        const newCategoryValue = categorySelect.value;
+        const newBrandValue = brandSelect.value;
+
+        // Chỉ cập nhật URL khi cả hai giá trị đã thay đổi
+        if (newCategoryValue !== categoryValue || newBrandValue !== brandValue) {
+          categoryValue = newCategoryValue;
+          brandValue = newBrandValue;
+
+          // Tạo URL mới với các tham số đã chọn
+          let url = '{{ route("site.product") }}';
+          const params = new URLSearchParams();
+
+          if (categoryValue) {
+            params.append('category_slug', categoryValue);
+          }
+          if (brandValue) {
+            params.append('brand_slug', brandValue);
+          }
+
+          // Chỉ chuyển hướng nếu có ít nhất một tham số
+          if (params.toString()) {
+            window.location.href = `${url}?${params.toString()}`;
+          }
+        }
+      }
+
+      // Thêm event listener cho cả hai select box
+      categorySelect.addEventListener('change', updateFilters);
+      brandSelect.addEventListener('change', updateFilters);
+    });
+  </script>
 </x-layout-site>

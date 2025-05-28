@@ -34,8 +34,13 @@
                     <tr>  
                         <td class="border border-gray-300 p-2">
                             <!-- Hiển thị hình ảnh -->
-                           
-                            <img src="{{ asset('assets/images/product/' . $item->thumbnail) }}" class="w-16 h-16 object-cover" alt="">
+                            <div class="flex flex-wrap gap-1">
+                                @foreach($item->productimage as $image)
+                                    <img src="{{ asset('assets/images/product/' . $image->thumbnail) }}" 
+                                         class="w-16 h-16 object-cover rounded" 
+                                         alt="{{ $item->name }}">
+                                @endforeach
+                            </div>
                         </td>
                         <td class="border border-gray-300 p-2">{{ $item->name }}</td>
                         <td class="border border-gray-300 p-2">{{ $item->categoryname }}</td>

@@ -17,10 +17,29 @@
                 <img src="{{ asset($imagePath) }}" alt="{{ $item['name'] }}" class="w-16 h-16 object-cover rounded">
                 <div class="ml-4 flex-1">
                     <h3 class="font-semibold">{{ $item['name'] }}</h3>
-                    <p class="text-sm text-gray-500">Product Code: {{ $item['product_id'] }}</p>
+                    <p class="text-sm text-gray-500">Mã sản phẩm: {{ $item['product_id'] }}</p>
+                    <form action="{{ route('cart.updateCart') }}" method="POST" class="flex items-center space-x-2">
+                        @csrf
+                        <input type="hidden" name="product_id" value="{{ $productId }}">
+                        <div class="flex items-center">
+                            <label for="size" class="mr-2 text-sm">Size:</label>
+                            <select name="size" id="size" class="border border-gray-300 rounded px-2 py-1 text-sm">
+                                <option value="S" {{ isset($item['size']) && $item['size'] == 'S' ? 'selected' : '' }}>S</option>
+                                <option value="M" {{ isset($item['size']) && $item['size'] == 'M' ? 'selected' : '' }}>M</option>
+                                <option value="L" {{ isset($item['size']) && $item['size'] == 'L' ? 'selected' : '' }}>L</option>
+                            </select>
+                        </div>
+                        <div class="flex items-center">
+                            <label for="quantity" class="mr-2 text-sm">Số lượng:</label>
+                            <input type="number" name="quantity" id="quantity" value="{{ $item['quantity'] }}" min="1" 
+                                class="w-16 border border-gray-300 rounded px-2 py-1 text-sm">
+                        </div>
+                        <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm">
+                            Cập nhật
+                        </button>
+                    </form>
                 </div>
                 <span class="ml-6 font-semibold">{{ number_format($item['price'], 0, ',', '.') }}₫</span>
-                <span class="ml-2">x {{ $item['quantity'] }}</span>
                 <form action="{{ route('cart.removeFromCart') }}" method="POST" class="ml-4">
                     @csrf
                     <input type="hidden" name="product_id" value="{{ $productId }}">
@@ -59,17 +78,12 @@
         </div>
         <div class="mt-4 flex space-x-2">
             <a href="{{ route('site.product') }}" class="flex-1 bg-gray-300 text-black rounded py-2 hover:bg-gray-400 text-center">Continue Shopping</a>
-            <button class="flex-1 bg-blue-600 text-white rounded py-2 hover:bg-blue-700">Checkout</button>
+            <a href="{{ route('checkout.index') }}" class="flex-1 bg-blue-600 text-white rounded py-2 hover:bg-blue-700 text-center">Checkout</a>
         </div>
         <div class="mt-6">
             <div class="flex justify-between items-center">
                 <span class="text-lg font-semibold">Tổng tiền:</span>
                 <span class="text-xl font-bold">{{ number_format(array_sum(array_map(function($item) { return $item['price'] * $item['quantity']; }, session('cart', []))), 0, ',', '.') }}₫</span>
-            </div>
-            <div class="mt-6">
-                <a href="{{ route('checkout.index') }}" class="w-full bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition duration-300 block text-center">
-                    Thanh toán
-                </a>
             </div>
         </div>
     </div>

@@ -3,7 +3,7 @@
         <div class="border border-blue-100 mb-3 rounded-lg p-2">
             <div class="flex items-center justify-between">
                 <div class="">
-                    <h2 class="text-xl font-bold text-blue-300">Danh sách thương hiệu</h2>
+                    <h2 class="text-xl font-bold text-blue-300">Danh sách Menu</h2>
                 </div>
                 <div class="text-right">
                     <a href="{{route('menu.create')}}" class="bg-green-300 px-2 py-2 rounded-xl mx-1 text-white">

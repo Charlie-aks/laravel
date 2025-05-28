@@ -70,6 +70,7 @@ class CheckoutController extends Controller
                     'price_buy' => $item['price'],
                     'qty' => $item['quantity'],
                     'amount' => $item['price'] * $item['quantity'],
+                    'size' => $item['size'] ?? null
                 ]);
             }
 

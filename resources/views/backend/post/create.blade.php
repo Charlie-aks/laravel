@@ -1,5 +1,5 @@
 <x-layout-admin>
-    <form action="{{ route('post.store') }}" method="POST">
+    <form action="{{ route('post.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
         <div class="content-wrapper p-5 bg-gray-50 min-h-screen">
             <div class="bg-white shadow-md rounded-lg p-4 mb-4">
@@ -44,7 +44,7 @@
 
                 <div>
                     <label for="thumbnail"><strong>Thumbnail</strong></label>
-                    <input type="text" name="thumbnail" id="thumbnail" value="{{ old('thumbnail') }}" class="w-full border border-gray-300 rounded-lg p-2" placeholder="Đường dẫn ảnh thumbnail">
+                    <input type="file" name="thumbnail" id="thumbnail" class="w-full border border-gray-300 rounded-lg p-2" accept="image/*">
                     @error('thumbnail') <div class="text-red-500">{{ $message }}</div> @enderror
                 </div>
 

@@ -46,6 +46,7 @@
                 </li>
                 <li><a class="block p-3 rounded-lg  hover:bg-blue-900" href="#">Giao diện</a></li>
                 <li><a class="block p-3 rounded-lg  hover:bg-blue-900" href="{{route('contact.index')}}">Liên hệ</a></li>
+                <li><a class="block p-3 rounded-lg  hover:bg-blue-900" href="{{route('menu.index')}}">Menu</a></li>
                 <li><a class="block p-3 rounded-lg  hover:bg-blue-900" href="{{route('order.index')}}">Đơn hàng</a></li>
                 <li><a class="block p-3 rounded-lg  hover:bg-blue-900" href="{{route('user.index')}}">Khách hàng</a></li>
                 <li><a class="block p-3 rounded-lg  hover:bg-blue-900" href="{{route('feedback.index')}}">Đánh Giá</a></li>

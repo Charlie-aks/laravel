@@ -24,7 +24,7 @@
                             <label id="name">
                                 <strong>Tên sản phẩm</strong>
                             </label>
-                            <input value="{{old('name',$product->name)}}" type="text" class="w-full border border-gray-300 rounded-lg p-2" placeholder="Nhập tên sản phẩm" name="name" id="name">
+                            <input value="{{ old('name', $product->name) }}" type="text" class="w-full border border-gray-300 rounded-lg p-2" placeholder="Nhập tên sản phẩm" name="name" id="name">
                             @if($errors->has('name'))
                                 <div class="text-red-500">{{$errors->first('name')}}</div>
                             @endif
@@ -33,7 +33,7 @@
                             <label id="detail">
                                 <strong>Chi tiết sản phẩm</strong>
                             </label>
-                            <textarea name="detail" id="detail" rows="4" class="w-full border border-gray-300 rounded-lg p-2">{{old('detail',$product->detail)}}</textarea>
+                            <textarea name="detail" id="detail" rows="4" class="w-full border border-gray-300 rounded-lg p-2">{{ old('detail', $product->detail) }}</textarea>
                             @if($errors->has('detail'))
                                 <div class="text-red-500">{{$errors->first('detail')}}</div>
                             @endif
@@ -58,18 +58,18 @@
                                 <label id="price_sale">
                                     <strong>Giá khuyến mãi</strong>
                                 </label>
-                                <input value="{{old('price_sale',$product->price_sale)}}" type="number" class="w-full border border-gray-300 rounded-lg p-2" placeholder="Giá khuyến mãi" name="price_sale" id="price_sale">
+                                <input value="{{ old('price_sale', $product->sale->price_sale ?? '') }}" type="number" class="w-full border border-gray-300 rounded-lg p-2" placeholder="Giá khuyến mãi" name="price_sale" id="price_sale">
                                 @if($errors->has('price_sale'))
-                                <div class="text-red-500">{{$errors->first('price_sale')}}</div>
-                            @endif
+                                    <div class="text-red-500">{{$errors->first('price_sale')}}</div>
+                                @endif
                             </div>
                             <div class="mb-3">
                                 <label id="qty">
                                     <strong>Số lượng</strong>
                                 </label>
-                                <input value="{{old('qty',$product->qty)}}" type="number" class="w-full border border-gray-300 rounded-lg p-2" value="1" name="qty" min="1" id="qty">
+                                <input value="{{ old('qty', $product->store->qty ?? '') }}" type="number" class="w-full border border-gray-300 rounded-lg p-2" name="qty" min="1" id="qty">
                                 @if($errors->has('qty'))
-                                <div class="text-red-500">{{$errors->first('qty')}}</div>
+                                    <div class="text-red-500">{{$errors->first('qty')}}</div>
                                 @endif
                             </div>
                         </div>
@@ -115,7 +115,21 @@
                             <label id="thumbnail">
                                 <strong>Hình ảnh</strong>
                             </label>
-                            <input type="file" class="w-full border border-gray-300 rounded-lg p-2" name="thumbnail" id="thumbnail">
+                            <input type="file" class="w-full border border-gray-300 rounded-lg p-2" name="thumbnail[]" id="thumbnail" multiple accept="image/*">
+                            <div id="image-preview" class="mt-2 grid grid-cols-4 gap-2">
+                                @foreach($product->productimage as $image)
+                                    <div class="relative group">
+                                        <img src="{{ asset('assets/images/product/' . $image->thumbnail) }}" 
+                                             class="w-full h-24 object-cover rounded-lg" 
+                                             alt="Product Image">
+                                        <button type="button" 
+                                                class="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                                                onclick="deleteImage({{ $image->id }})">
+                                            <i class="fa fa-times"></i>
+                                        </button>
+                                    </div>
+                                @endforeach
+                            </div>
                             @if($errors->has('thumbnail'))
                                 <div class="text-red-500">{{$errors->first('thumbnail')}}</div>
                             @endif
@@ -135,4 +149,48 @@
             </div>
         </div>
     </form>
+
+    <script>
+        // Preview ảnh khi chọn file
+        document.getElementById('thumbnail').addEventListener('change', function(e) {
+            const preview = document.getElementById('image-preview');
+            preview.innerHTML = ''; // Clear existing previews
+            
+            [...e.target.files].forEach(file => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const div = document.createElement('div');
+                    div.className = 'relative group';
+                    div.innerHTML = `
+                        <img src="${e.target.result}" class="w-full h-24 object-cover rounded-lg" alt="Preview">
+                    `;
+                    preview.appendChild(div);
+                }
+                reader.readAsDataURL(file);
+            });
+        });
+
+        // Xóa ảnh
+        function deleteImage(id) {
+            if (confirm('Bạn có chắc muốn xóa ảnh này?')) {
+                fetch(`/admin/product/image/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Xóa element khỏi DOM
+                        const imageElement = document.querySelector(`[data-image-id="${id}"]`);
+                        if (imageElement) {
+                            imageElement.remove();
+                        }
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            }
+        }
+    </script>
 </x-layout-admin>

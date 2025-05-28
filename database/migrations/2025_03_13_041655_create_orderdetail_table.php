@@ -18,6 +18,7 @@ return new class extends Migration
             $table->float('price_buy');
             $table->unsignedInteger('qty');
             $table->float('amount');
+            $table->string('size', 10)->nullable();
         });
     }
 

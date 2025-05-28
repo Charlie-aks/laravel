@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use App\Http\Requests\StoreProductRequest;
+use App\Http\Requests\UpdateProductRequest;
 
 class ProductController extends Controller
 {
@@ -25,16 +26,15 @@ class ProductController extends Controller
             'category.name as categoryname',
             'brand.name as brandname',
             'product.status',
-            'productimage.thumbnail',
             'product.price_root',
             'productsale.price_sale',
             'productstore.qty'
         )
         ->join('category', 'product.category_id', '=', 'category.id')
         ->join('brand', 'product.brand_id', '=', 'brand.id')
-        ->leftJoin('productimage', 'product.id', '=', 'productimage.product_id')
         ->leftJoin('productsale', 'product.id', '=', 'productsale.product_id')
         ->leftJoin('productstore', 'product.id', '=', 'productstore.product_id')
+        ->with('productimage')
         ->orderBy('product.created_at', 'desc')
         ->paginate(5);
 
@@ -70,14 +70,15 @@ class ProductController extends Controller
         $product->save();
 
         if($request->hasFile('thumbnail')) {
-            $file = $request->file('thumbnail');
-            $filename = time() . '_' . $file->getClientOriginalName();
-            $file->move(public_path('assets/images/product'), $filename);
+            foreach($request->file('thumbnail') as $file) {
+                $filename = time() . '_' . $file->getClientOriginalName();
+                $file->move(public_path('assets/images/product'), $filename);
 
-            ProductImage::create([
-                'product_id' => $product->id,
-                'thumbnail' => $filename,
-            ]);
+                ProductImage::create([
+                    'product_id' => $product->id,
+                    'thumbnail' => $filename,
+                ]);
+            }
         }
 
         ProductStore::create([
@@ -103,16 +104,22 @@ class ProductController extends Controller
 
     public function edit(string $id)
     {
-        $product = Product::find($id);
+        $product = Product::with(['thumbnail', 'sale', 'store'])->find($id);
+        if (!$product) {
+            return redirect()->route('product.index')->with('error', 'Sản phẩm không tồn tại.');
+        }
         $list_category = Category::select('name', 'id')->orderBy('sort_order', 'asc')->get();
         $list_brand = Brand::select('name', 'id')->orderBy('sort_order', 'asc')->get();
+        
         return view('backend.product.edit', compact('list_category', 'list_brand', 'product'));
     }
 
-    public function update(Request $request, string $id)
+    public function update(UpdateProductRequest $request, string $id)
     {
         $product = Product::find($id);
-        $slug = Str::slug($request->name);
+        if (!$product) {
+            return redirect()->route('product.index')->with('error', 'Product not found.');
+        }
 
         $product->name = $request->name;
         $product->detail = $request->detail;
@@ -121,26 +128,16 @@ class ProductController extends Controller
         $product->status = $request->status;
         $product->category_id = $request->category_id;
         $product->brand_id = $request->brand_id;
-        $product->slug = $slug;
+        $product->slug = Str::slug($request->name);
         $product->updated_by = Auth::id() ?? 1;
         $product->updated_at = now();
         $product->save();
 
-        // Cập nhật hình ảnh
         if($request->hasFile('thumbnail')) {
-            $file = $request->file('thumbnail');
-            $filename = $slug . '.' . $file->getClientOriginalExtension();
-            $file->move(public_path('assets/images/product'), $filename);
+            foreach($request->file('thumbnail') as $file) {
+                $filename = time() . '_' . $file->getClientOriginalName();
+                $file->move(public_path('assets/images/product'), $filename);
 
-            $productImage = ProductImage::where('product_id', $product->id)->first();
-            if ($productImage) {
-                $oldImagePath = public_path('assets/images/product/' . $productImage->thumbnail);
-                if (File::exists($oldImagePath)) {
-                    File::delete($oldImagePath);
-                }
-                $productImage->thumbnail = $filename;
-                $productImage->save();
-            } else {
                 ProductImage::create([
                     'product_id' => $product->id,
                     'thumbnail' => $filename,
@@ -148,7 +145,6 @@ class ProductController extends Controller
             }
         }
 
-        // Cập nhật ProductStore
         $productStore = ProductStore::where('product_id', $id)->first();
         if ($productStore) {
             $productStore->qty = $request->qty;
@@ -157,7 +153,6 @@ class ProductController extends Controller
             $productStore->save();
         }
 
-        // Cập nhật hoặc tạo mới ProductSale
         if ($request->has('price_sale')) {
             $productSale = ProductSale::where('product_id', $id)->first();
             if ($productSale) {
@@ -265,5 +260,36 @@ class ProductController extends Controller
             $product->save();
         }
         return redirect()->route('product.index');
+    }
+
+    public function productImage()
+    {
+        return $this->hasOne(ProductImage::class);
+    }
+
+    public function productSale()
+    {
+        return $this->hasOne(ProductSale::class);
+    }
+
+    public function productStore()
+    {
+        return $this->hasOne(ProductStore::class);
+    }
+
+    public function deleteImage($id)
+    {
+        $image = ProductImage::find($id);
+        if ($image) {
+            // Xóa file ảnh
+            $imagePath = public_path('assets/images/product/' . $image->thumbnail);
+            if (File::exists($imagePath)) {
+                File::delete($imagePath);
+            }
+            // Xóa record trong database
+            $image->delete();
+            return response()->json(['success' => true]);
+        }
+        return response()->json(['success' => false], 404);
     }
 }

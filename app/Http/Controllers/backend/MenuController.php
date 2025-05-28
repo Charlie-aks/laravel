@@ -98,6 +98,17 @@ class MenuController extends Controller
             'parent_id' => 'nullable|integer',
         ]);
 
+        // Kiểm tra link trùng lặp
+        $existingMenu = Menu::where('link', $request->link)
+            ->where('id', '!=', $id)
+            ->first();
+
+        if ($existingMenu) {
+            return redirect()->back()
+                ->withInput()
+                ->withErrors(['link' => 'Link này đã tồn tại trong menu khác.']);
+        }
+
         // Cập nhật dữ liệu menu
         $menu->name = $request->name;
         $menu->link = $request->link;
@@ -106,8 +117,8 @@ class MenuController extends Controller
         $menu->status = $request->status;
         $menu->sort_order = $request->sort_order ?? 0;
         $menu->parent_id = $request->parent_id ?? 0;
-        $menu->updated_by = Auth::id() ?? 1; // Lấy ID người dùng hiện tại, mặc định 1 nếu không có
-        $menu->updated_at = now(); // Nếu không sử dụng timestamps trong model
+        $menu->updated_by = Auth::id() ?? 1;
+        $menu->updated_at = now();
 
         $menu->save();
 

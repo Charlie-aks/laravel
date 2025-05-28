@@ -30,9 +30,12 @@
         @endphp
         <img src="{{ asset($imagePath) }}" alt="{{ $product->name }}"
         class="w-full h-[250px] object-cover transition-transform duration-500">
-        @if ($product->price_root && $product->price_sale < $product->price_root)
+        @php
+            $hasSale = isset($product->sale) && $product->sale && $product->price_root && $product->sale->price_sale < $product->price_root;
+        @endphp
+        @if ($hasSale)
             <span class="absolute top-3 left-3 bg-red-500 text-white text-xs font-medium px-2 py-1 rounded">
-                -{{ round((($product->price_root - $product->price_sale) / $product->price_root) * 100) }}%
+                -{{ round((($product->price_root - $product->sale->price_sale) / $product->price_root) * 100) }}%
             </span>
         @endif
     </a>
@@ -46,9 +49,12 @@
 
         <div class="flex justify-between items-center mt-4">
             <span class="text-lg font-bold text-yellow-600">
-                {{ number_format($product->price_sale, 0, ',', '.') }}₫
+                @php
+                    $displayPrice = isset($product->sale) && $product->sale ? $product->sale->price_sale : $product->price_root;
+                @endphp
+                {{ number_format($displayPrice, 0, ',', '.') }}₫
             </span>
-            @if ($product->price_root)
+            @if ($hasSale)
                 <span class="text-sm text-gray-400 line-through ml-2">
                     {{ number_format($product->price_root, 0, ',', '.') }}₫
                 </span>

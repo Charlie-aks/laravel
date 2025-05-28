@@ -41,7 +41,7 @@ class ProductController extends Controller
             $query->whereIn('category_id', $listcategoryid);
         }
 
-        $product_list = $query->get();
+        $product_list = $query->paginate(8);
         return view('frontend.product', compact('product_list'));
     }
 
@@ -61,7 +61,7 @@ class ProductController extends Controller
                     ->orWhere('description', 'like', "%{$keyword}%");
             })
             ->orderBy('created_at', 'desc')
-            ->get();
+            ->paginate(8);
 
         return view('frontend.product', compact('product_list', 'keyword'));
     }

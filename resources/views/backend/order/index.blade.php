@@ -1,64 +1,94 @@
 <x-layout-admin>
-    <div class="content-wrapper bg-white">
-        <div class="border border-blue-100 mb-3 rounded-lg p-2">
-            <div class="flex items-center justify-between">
-                <div class="">
-                    <h2 class="text-xl font-bold text-blue-300">Danh sách đơn hàng</h2>
-                </div>
-                <div class="text-right">
-                    <a href="{{route('order.create')}}" class="bg-green-300 px-2 py-2 rounded-xl mx-1 text-white">
-                        <i class="fa fa-plus" aria-hidden="true"></i>
-                        Thêm mới
-                    </a>
-                    <a href="{{route('order.trash')}}" class="bg-red-300 px-2 py-2 rounded-xl mx-1 text-white">
-                        <i class="fa fa-trash" aria-hidden="true"></i>
-                        Thùng rác
-                    </a>
-                </div>
+    <x-slot:title>Quản lý đơn hàng</x-slot:title>
+    <div class="container mx-auto px-4 py-8">
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold">Danh sách đơn hàng</h2>
             </div>
-        </div>
-        <div class="border border-blue-100 rounded-lg p-2">
-            <table class="border-collapse border-gray-400 w-full">
-                <thead>
-                    <tr>
-                        <th class="border border-gray-300 p-2">Email</th>
-                        <th class="border border-gray-300 p-2">Tên</th>
-                        <th class="border border-gray-300 p-2">Sđt</th>
-                        <th class="border border-gray-300 p-2">địa chỉ</th>
-                        <th class="border border-gray-300 p-2">ID</th>
-                        <th class="border border-gray-300 p-2">Chức năng</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($list as $item)
-                    <tr>  
-                        <td class="border border-gray-300 p-2">{{ $item->email }}</td>
-                        <td class="border border-gray-300 p-2">{{ $item->name }}</td>
-                        <td class="border border-gray-300 p-2">{{ $item->phone }}</td>
-                        <td class="border border-gray-300 p-2">{{ $item->address }}</td>
-                        <td class="border border-gray-300 p-2">{{ $item->id }}</td>
-                        <td class="border border-gray-300 p-2 text-center space-x-2">
-                            <a href="{{ route('order.status', ['order' => $item->id]) }}" class="inline-block">
-                                @if ($item->status == 1)
-                                    <i class="fa fa-toggle-on text-2xl text-green-400" aria-hidden="true"></i>
-                                @else
-                                    <i class="fa fa-toggle-off text-2xl text-red-400" aria-hidden="true"></i>
-                                @endif
-                            </a>
-                            <a href="{{ route('order.edit', ['order' => $item->id]) }}" class="inline-block">
-                                <i class="fa fa-edit text-2xl text-blue-400" aria-hidden="true"></i>
-                            </a>
-                            <a href="{{ route('order.delete', ['order' => $item->id]) }}" 
-                               class="inline-block"
-                               onclick="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này?')">
-                                <i class="fa fa-trash text-2xl text-red-400" aria-hidden="true"></i>
-                            </a>
-                        </td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
-            <div class="mt-4">{{ $list->links() }}</div>
+
+            @if(session('success'))
+                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+                    {{ session('success') }}
+                </div>
+            @endif
+
+            @if(session('error'))
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                    {{ session('error') }}
+                </div>
+            @endif
+
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Khách hàng</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Số điện thoại</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Trạng thái</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tổng tiền</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Ngày đặt</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        @foreach($orders as $order)
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">#{{ $order->id }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $order->name }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $order->phone }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $order->email }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                    @if($order->status == 'completed') bg-green-100 text-green-800
+                                    @elseif($order->status == 'processing') bg-blue-100 text-blue-800
+                                    @elseif($order->status == 'cancelled') bg-red-100 text-red-800
+                                    @else bg-yellow-100 text-yellow-800
+                                    @endif">
+                                    @if($order->status == 'pending') Chờ xử lý
+                                    @elseif($order->status == 'processing') Đang xử lý
+                                    @elseif($order->status == 'completed') Hoàn thành
+                                    @elseif($order->status == 'cancelled') Đã hủy
+                                    @endif
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                {{ number_format($order->total_amount, 0, ',', '.') }}₫
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                {{ $order->created_at->format('d/m/Y H:i') }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                <div class="flex space-x-2">
+                                    <a href="{{ route('order.show', $order->id) }}" 
+                                        class="text-blue-600 hover:text-blue-900">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="{{ route('order.edit', $order->id) }}" 
+                                        class="text-yellow-600 hover:text-yellow-900">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <form action="{{ route('order.destroy', $order->id) }}" method="POST" 
+                                        class="inline-block" 
+                                        onsubmit="return confirm('Bạn có chắc chắn muốn xóa đơn hàng này?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="text-red-600 hover:text-red-900">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="mt-4">
+                {{ $orders->links() }}
+            </div>
         </div>
     </div>
 </x-layout-admin>

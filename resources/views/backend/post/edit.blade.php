@@ -1,5 +1,5 @@
 <x-layout-admin>
-    <form action="{{ route('post.update', ['post' => $post->id]) }}" method="POST">
+    <form action="{{ route('post.update', ['post' => $post->id]) }}" method="POST" enctype="multipart/form-data">
         @csrf
         @method('PUT')
         <div class="content-wrapper p-5 bg-gray-50 min-h-screen">
@@ -59,20 +59,14 @@
                     <div>
                         {{-- Hình thumbnail --}}
                         <div class="mb-4">
-                            <label for="thumbnail" class="font-semibold">Đường dẫn ảnh thumbnail</label>
-                            <input value="{{ old('thumbnail', $post->thumbnail) }}" type="text" name="thumbnail" id="thumbnail"
-                                class="w-full border border-gray-300 rounded-lg p-2"
-                                placeholder="Nhập URL ảnh thumbnail">
-                            @error('thumbnail')
-                                <div class="text-red-500">{{ $message }}</div>
-                            @enderror
-
+                            <label for="thumbnail"><strong>Thumbnail</strong></label>
+                            <input type="file" name="thumbnail" id="thumbnail" class="w-full border border-gray-300 rounded-lg p-2" accept="image/*">
                             @if($post->thumbnail)
                                 <div class="mt-2">
-                                    <img src="{{ asset($post->thumbnail) }}" alt="Thumbnail"
-                                        class="w-32 h-auto rounded">
+                                    <img src="{{ asset($post->thumbnail) }}" alt="Thumbnail" class="w-32 h-auto rounded">
                                 </div>
                             @endif
+                            @error('thumbnail') <div class="text-red-500">{{ $message }}</div> @enderror
                         </div>
 
                         {{-- Trạng thái --}}

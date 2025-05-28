@@ -2,12 +2,17 @@
   <x-slot:title> Trang Chu </x-slot:title> 
   <main>
      <!-- slider -->
-     <div class="slider h-[650px] relative bg-center bg-cover px-6 flex flex-col items-center justify-center text-white text-4xl font-bold space-y-4" style="background-image: url('{{ asset('asset/img/slider.webp') }}');">
+     @if($slideshow->isNotEmpty())
+     <div class="slider h-[650px] relative bg-center bg-cover px-6 flex flex-col items-center justify-center text-white text-4xl font-bold space-y-4" style="background-image: url('{{ asset($slideshow[0]->image) }}');">
       <!-- Content slider-->                      
         <button class="w-60 h-12 px-5 py-2 bg-white text-xs text-black font-Karla rounded-none shadow-md uppercase hover:bg-orange-100 transition duration-300">
-          Explore our product
+          {{ $slideshow[0]->name ?? 'Explore our product' }}
         </button>  
+        @if($slideshow[0]->description)
+        <p class="text-lg font-normal text-center max-w-2xl">{{ $slideshow[0]->description }}</p>
+        @endif
     </div>
+    @endif
     <section>
       <!--Product New--> 
       <x-product-new/>
@@ -24,7 +29,7 @@
         </div>
         <div class="w-[700px] h-auto items-center mx-auto mt-[60px] space-y-5">
           <h1 class="font-medium text-2xl">ADORABLE DREAMS</h1>
-          <p>This collection brings together Levents' dreamy spirit with Hello Kitty’s timeless adorableness.
+          <p>This collection brings together Levents' dreamy spirit with Hello Kitty's timeless adorableness.
             Designed for dreamers who find beauty in the little things, it serves as a gentle reminder that love,
             friendship, and imagination are the true colors of life.
             Step into a world where every piece tells a story of dreams, and every moment radiates cuteness.

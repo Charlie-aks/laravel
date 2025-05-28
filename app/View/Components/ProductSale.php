@@ -12,16 +12,14 @@ class ProductSale extends Component
 
     public function __construct()
     {
-        
-        $this->saleProducts = DB::table('product')
-        ->join('productsale', 'productsale.product_id', '=', 'product.id')
-        ->where('product.status', 1)
-        ->whereColumn('productsale.price_sale', '<', 'product.price_root')
-        ->whereNull('product.deleted_at')
-        ->orderBy('product.created_at', 'DESC')
-        ->select('product.*', 'productsale.price_sale')
-        ->take(4)
-        ->get();
+        $this->saleProducts = Product::with(['productimage', 'sale'])
+            ->where('status', 1)
+            ->whereHas('sale', function($query) {
+                $query->whereColumn('price_sale', '<', 'product.price_root');
+            })
+            ->orderBy('created_at', 'DESC')
+            ->take(4)
+            ->get();
     }
 
     public function render()

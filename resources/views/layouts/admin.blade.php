@@ -32,6 +32,9 @@
                 <a href="{{ route('admin.brand.index') }}" class="block py-2 px-4 hover:bg-gray-700 {{ request()->routeIs('admin.brand.*') ? 'bg-gray-700' : '' }}">
                     <i class="fas fa-tags mr-2"></i> Thương hiệu
                 </a>
+                <a href="{{ route('admin.statistic.index') }}" class="block py-2 px-4 hover:bg-gray-700 {{ request()->routeIs('admin.statistic.*') ? 'bg-gray-700' : '' }}">
+                    <i class="fas fa-chart-line mr-2"></i> Thống kê
+                </a>
                 <a href="{{ route('admin.user.index') }}" class="block py-2 px-4 hover:bg-gray-700 {{ request()->routeIs('admin.user.*') ? 'bg-gray-700' : '' }}">
                     <i class="fas fa-users mr-2"></i> Người dùng
                 </a>

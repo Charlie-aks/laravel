@@ -18,6 +18,7 @@ class CartController extends Controller
     {
         $product_id = $request->input('product_id');
         $quantity = $request->input('quantity', 1);
+        $size = $request->input('size');
         
         // Lấy thông tin sản phẩm
         $product = Product::with(['productimage', 'sale'])
@@ -41,7 +42,8 @@ class CartController extends Controller
                 'name' => $product->name,
                 'quantity' => $quantity,
                 'price' => $product->sale ? $product->sale->price_sale : $product->price_root,
-                'image' => $product->productimage->first() ? $product->productimage->first()->thumbnail : 'default-thumbnail.jpg'
+                'image' => $product->productimage->first() ? $product->productimage->first()->thumbnail : 'default-thumbnail.jpg',
+                'size' => $size
             ];
         }
         
@@ -69,11 +71,15 @@ class CartController extends Controller
     {
         $product_id = $request->input('product_id');
         $quantity = $request->input('quantity');
+        $size = $request->input('size');
         
         $cart = session()->get('cart', []);
         
         if (isset($cart[$product_id])) {
             $cart[$product_id]['quantity'] = $quantity;
+            if ($size) {
+                $cart[$product_id]['size'] = $size;
+            }
             session()->put('cart', $cart);
         }
         

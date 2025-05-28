@@ -18,7 +18,7 @@ class StorePostRequest extends FormRequest
             'title'       => 'required|string|max:255',
             'slug'        => 'nullable|string|max:255',
             'detail'      => 'required|string',
-            'thumbnail'   => 'nullable|string|max:255',
+            'thumbnail'   => 'nullable|image|max:2048',
             'type'        => 'required|string|in:post,page', // ví dụ có 2 loại
             'description' => 'nullable|string|max:500',
             'created_by'  => 'required|integer',

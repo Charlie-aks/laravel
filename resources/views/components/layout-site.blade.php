@@ -77,10 +77,6 @@
         <!-- Search + Cart -->
         <div class="w-2/6 flex justify-end pr-40 items-center space-x-4">
           <!-- Search Bar -->
-          <div class="relative">
-            <input type="text" placeholder="Tìm kiếm..." class="w-48 px-4 py-2 border rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500">
-            <span class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer">🔍</span>
-          </div>
           <!-- Cart -->
           <div class="flex items-center space-x-2">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
@@ -88,7 +84,7 @@
             </svg>
             <a href="{{ route('site.cart') }}" class="flex items-center space-x-1">
               <span class="relative after:absolute after:left-0 after:bottom-[-2px] after:w-0 after:h-[2px] after:bg-orange-200 after:transition-all after:duration-300 hover:after:w-full">Cart</span>
-              <span class="text-sm text-center rounded-full px-1.5 bg-orange-400 text-white">10</span>
+              <x-cart-count />
             </a>
             <form method="POST" action="{{ route('logout') }}">
               @csrf
@@ -112,7 +108,7 @@
         </div>
         <div class="flex space-x-4">
           <ul class="space-y-5">
-            <li>Lien he</li>
+            <a href="{{route('site.contact') }}"><li>Lien he</li></a>
             <li>Hotline
               1900 633 028</li>
             <li>Email for customer
@@ -133,10 +129,10 @@
           </ul>      
           <ul class="space-y-5">
             <li><a href="">Hỗ trợ</a></li>
-            <li><a href="">Chính sách đổi trả</a></li>
-            <li><a href="">Chính sách vận chuyển</a></li>
-            <li><a href="">Chính sách bảo hành</a></li>
-            <li><a href="">Hướng dẫn mua hàng</a></li>
+            <li><a href="{{route('return.policy')}}">Chính sách đổi trả</a></li>
+            <li><a href="{{route('shipping.policy')}}">Chính sách vận chuyển</a></li>
+            <li><a href="{{route('warranty.policy')}}">Chính sách bảo hành</a></li>
+            <li><a href="{{route('buying.guide')}}">Hướng dẫn mua hàng</a></li>
             <ul class="flex">
             <li><svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="30" height="30" viewBox="0 0 30 30">
               <path d="M15,3C8.373,3,3,8.373,3,15c0,6.016,4.432,10.984,10.206,11.852V18.18h-2.969v-3.154h2.969v-2.099

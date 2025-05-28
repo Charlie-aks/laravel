@@ -41,7 +41,7 @@ class PostController extends Controller
             'title'        => 'required|string|max:255',
             'slug'         => 'nullable|string|max:255',
             'detail'       => 'nullable|string',
-            'thumbnail'    => 'nullable|string|max:255',
+            'thumbnail'    => 'nullable|image|max:2048',
             'type'         => 'required|string|max:50',
             'description'  => 'nullable|string|max:500',
             'status'       => 'required|in:0,1',
@@ -52,12 +52,19 @@ class PostController extends Controller
         $post->title = $request->title;
         $post->slug = $request->slug ?? Str::slug($request->title);
         $post->detail = $request->detail;
-        $post->thumbnail = $request->thumbnail;
         $post->type = $request->type;
         $post->description = $request->description;
         $post->status = $request->status;
         $post->created_by = Auth::id() ?? 1;
         $post->updated_by = Auth::id() ?? 1;
+
+        if ($request->hasFile('thumbnail')) {
+            $file = $request->file('thumbnail');
+            $filename = time() . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path('assets/images/posts'), $filename);
+            $post->thumbnail = 'assets/images/posts/' . $filename;
+        }
+
         $post->save();
 
         return redirect()->route('post.index')->with('success', 'Thêm bài viết thành công');
@@ -85,27 +92,50 @@ class PostController extends Controller
             return redirect()->route('post.index')->with('error', 'Không tìm thấy bài viết.');
         }
 
+        // Debug thông tin file upload
+        if ($request->hasFile('thumbnail')) {
+            $file = $request->file('thumbnail');
+            \Log::info('File upload info:', [
+                'original_name' => $file->getClientOriginalName(),
+                'mime_type' => $file->getMimeType(),
+                'extension' => $file->getClientOriginalExtension(),
+                'size' => $file->getSize(),
+                'is_valid' => $file->isValid()
+            ]);
+        }
+
         $request->validate([
             'topic_id'    => 'nullable|integer',
             'title'       => 'required|string|max:255',
             'slug'        => 'nullable|string|max:255',
             'detail'      => 'nullable|string',
-            'thumbnail'   => 'nullable|string|max:255',
+            'thumbnail'   => 'nullable|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'type'        => 'nullable|string|max:50',
             'description' => 'nullable|string|max:500',
             'status'      => 'required|in:0,1',
+        ], [
+            'thumbnail.mimes' => 'Hình ảnh phải có định dạng: jpeg, png, jpg, gif, webp',
+            'thumbnail.max' => 'Kích thước hình ảnh không được vượt quá 2MB'
         ]);
 
         $post->topic_id = $request->topic_id ?? $post->topic_id;
         $post->title = $request->title;
         $post->slug = $request->slug ?? Str::slug($request->title);
         $post->detail = $request->detail;
-        $post->thumbnail = $request->thumbnail;
         $post->type = $request->type ?? $post->type;
         $post->description = $request->description;
         $post->status = $request->status;
         $post->updated_by = Auth::id() ?? 1;
-        $post->updated_at = now();
+
+        if ($request->hasFile('thumbnail')) {
+            if ($post->thumbnail) {
+                File::delete(public_path($post->thumbnail));
+            }
+            $file = $request->file('thumbnail');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('uploads/posts'), $filename);
+            $post->thumbnail = 'uploads/posts/' . $filename;
+        }
 
         $post->save();
 
