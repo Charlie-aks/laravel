@@ -18,7 +18,6 @@
                         <th class="border border-gray-300 p-2">Danh mục</th>
                         <th class="border border-gray-300 p-2">Thương hiệu</th>
                         <th class="border border-gray-300 p-2">Giá gốc</th>
-                        <th class="border border-gray-300 p-2">Giá khuyến mãi</th>
                         <th class="border border-gray-300 p-2">Số lượng</th>
                         <th class="border border-gray-300 p-2">Trạng thái</th>
                         <th class="border border-gray-300 p-2">Chức năng</th>
@@ -40,13 +39,7 @@
                             <td class="border border-gray-300 p-2">{{ $item->categoryname }}</td>
                             <td class="border border-gray-300 p-2">{{ $item->brandname }}</td>
                             <td class="border border-gray-300 p-2">{{ number_format($item->price_root, 0, ',', '.') }}₫</td>
-                            <td class="border border-gray-300 p-2">
-                                @if ($item->price_sale)
-                                    <span class="text-red-500">{{ number_format($item->price_sale, 0, ',', '.') }}₫</span>
-                                @else
-                                    <span class="text-gray-400 italic">Không có</span>
-                                @endif
-                            </td>
+                            
                             <td class="border border-gray-300 p-2 text-center">{{ $item->qty ?? '0' }}</td>
                             <td class="border border-gray-300 p-2 text-center">
                                 @if ($item->status == 1)

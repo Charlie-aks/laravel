@@ -142,6 +142,12 @@ Route::prefix('admin')->group(function() {
         Route::get('status/{feedback}',[FeedbackController::class,'status'])->name('feedback.status');
     });
     Route::resource('feedback',FeedbackController::class);
+    
+    // Productsale routes
+    Route::get('productsale/trash', [App\Http\Controllers\backend\ProductsaleController::class, 'trash'])->name('productsale.trash');
+    Route::get('productsale/restore/{productsale}', [App\Http\Controllers\backend\ProductsaleController::class, 'restore'])->name('productsale.restore');
+    Route::get('productsale/delete/{productsale}', [App\Http\Controllers\backend\ProductsaleController::class, 'delete'])->name('productsale.delete');
+    Route::resource('productsale', App\Http\Controllers\backend\ProductsaleController::class);
 
     // Routes cho bài viết
     Route::get('/post', [PostController::class, 'index'])->name('post.index');
@@ -154,6 +160,7 @@ Route::prefix('admin')->group(function() {
 
     Route::delete('/admin/product/image/{id}', [ProductController::class, 'deleteImage'])->name('product.image.delete');
 }); 
+
 
 Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
 Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
@@ -174,6 +181,7 @@ Route::get('auth/google/callback', [App\Http\Controllers\Auth\GoogleController::
 // Facebook Login Routes
 Route::get('auth/facebook', [App\Http\Controllers\Auth\FacebookController::class, 'redirectToFacebook'])->name('facebook.login');
 Route::get('auth/facebook/callback', [App\Http\Controllers\Auth\FacebookController::class, 'handleFacebookCallback'])->name('facebook.callback');
+
 
 
 

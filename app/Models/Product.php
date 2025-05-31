@@ -36,6 +36,8 @@ class Product extends Model
 
     public function sale()
     {
-        return $this->hasOne(ProductSale::class, 'product_id');
+        return $this->hasOne(ProductSale::class, 'product_id')
+            ->where('date_begin', '<=', now())
+            ->where('date_end', '>=', now());
     }
 }

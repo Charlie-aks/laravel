@@ -12,4 +12,16 @@ class Productsale extends Model
     protected $fillable = [
         'product_id', 'price_sale', 'created_at', 'updated_at','date_begin', 'date_end', 'created_by',
     ];
+
+    // Relationship với Product
+    public function product()
+    {
+        return $this->belongsTo(Product::class, 'product_id', 'id');
+    }
+
+    // Relationship với User (người tạo)
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'created_by', 'id');
+    }
 }

@@ -250,6 +250,23 @@ class ProductController extends Controller
         return redirect()->route('product.trash');
     }
 
+    public function show($id)
+    {
+        $product = Product::select(
+            'product.*',
+            'category.name as categoryname',
+            'brand.name as brandname',
+            'productstore.qty'
+        )
+        ->join('category', 'product.category_id', '=', 'category.id')
+        ->join('brand', 'product.brand_id', '=', 'brand.id')
+        ->leftJoin('productstore', 'product.id', '=', 'productstore.product_id')
+        ->with('productimage')
+        ->findOrFail($id);
+
+        return view('backend.product.show', compact('product'));
+    }
+
     public function status($id)
     {
         $product = Product::find($id);

@@ -47,6 +47,9 @@
                         <td class="border border-gray-300 p-2">{{ $item->brandname }}</td>
                         <td class="border border-gray-300 p-2">{{ $item->id }}</td>
                         <td class="border border-gray-300 p-2 text-center space-x-2">
+                            <a href="{{ route('product.show', ['product' => $item->id]) }}" class="inline-block">
+                                <i class="fa fa-eye text-2xl text-blue-400" aria-hidden="true"></i>
+                            </a>
                             <a href="{{ route('product.status', ['product' => $item->id]) }}" class="inline-block">
                                 @if ($item->status == 1)
                                     <i class="fa fa-toggle-on text-2xl text-green-400" aria-hidden="true"></i>
