@@ -85,14 +85,7 @@
                             </tr>
                             @endforeach
                         </tbody>
-                        <tfoot class="bg-gray-50">
-                            <tr>
-                                <td colspan="3" class="px-6 py-4 text-right font-medium">Tổng tiền:</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                    {{ number_format($order->total) }}₫
-                                </td>
-                            </tr>
-                        </tfoot>
+                       
                     </table>
                 </div>
             </div>

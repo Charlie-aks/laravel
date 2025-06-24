@@ -68,9 +68,9 @@
                                 {{ $order->created_at->format('d/m/Y H:i') }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                <a href="{{ route('admin.orders.show', $order->id) }}" class="text-blue-600 hover:text-blue-900 mr-3">Xem</a>
-                                <a href="{{ route('admin.orders.edit', $order->id) }}" class="text-indigo-600 hover:text-indigo-900 mr-3">Sửa</a>
-                                <form action="{{ route('admin.orders.destroy', $order->id) }}" method="POST" class="inline">
+                                <a href="{{ route('admin.order.show', $order->id) }}" class="text-blue-600 hover:text-blue-900 mr-3">Xem</a>
+                                <a href="{{ route('admin.order.edit', $order->id) }}" class="text-indigo-600 hover:text-indigo-900 mr-3">Sửa</a>
+                                <form action="{{ route('admin.order.destroy', $order->id) }}" method="POST" class="inline">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="text-red-600 hover:text-red-900" onclick="return confirm('Bạn có chắc chắn muốn xóa đơn hàng này?')">Xóa</button>

@@ -20,7 +20,7 @@
                 <a href="{{ route('admin.dashboard') }}" class="block py-2 px-4 hover:bg-gray-700 {{ request()->routeIs('admin.dashboard') ? 'bg-gray-700' : '' }}">
                     <i class="fas fa-tachometer-alt mr-2"></i> Dashboard
                 </a>
-                <a href="{{ route('admin.orders.index') }}" class="block py-2 px-4 hover:bg-gray-700 {{ request()->routeIs('admin.orders.*') ? 'bg-gray-700' : '' }}">
+                <a href="{{ route('admin.order.index') }}" class="block py-2 px-4 hover:bg-gray-700 {{ request()->routeIs('admin.order.*') ? 'bg-gray-700' : '' }}">
                     <i class="fas fa-shopping-cart mr-2"></i> Đơn hàng
                 </a>
                 <a href="{{ route('admin.product.index') }}" class="block py-2 px-4 hover:bg-gray-700 {{ request()->routeIs('admin.product.*') ? 'bg-gray-700' : '' }}">

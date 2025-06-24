@@ -64,10 +64,10 @@
                             <label class="block text-sm font-medium text-gray-700">Trạng thái</label>
                             <select name="status" 
                                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                                <option value="pending" {{ old('status', $order->status) == 'pending' ? 'selected' : '' }}>Chờ xử lý</option>
-                                <option value="processing" {{ old('status', $order->status) == 'processing' ? 'selected' : '' }}>Đang xử lý</option>
-                                <option value="completed" {{ old('status', $order->status) == 'completed' ? 'selected' : '' }}>Hoàn thành</option>
-                                <option value="cancelled" {{ old('status', $order->status) == 'cancelled' ? 'selected' : '' }}>Đã hủy</option>
+                                <option value="0" {{ old('status', $order->status) == 0 ? 'selected' : '' }}>Chờ xử lý</option>
+                                <option value="1" {{ old('status', $order->status) == 1 ? 'selected' : '' }}>Đang giao</option>
+                                <option value="2" {{ old('status', $order->status) == 2 ? 'selected' : '' }}>Đã giao</option>
+                                <option value="3" {{ old('status', $order->status) == 3 ? 'selected' : '' }}>Đã hủy</option>
                             </select>
                             @error('status')
                                 <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
@@ -105,10 +105,10 @@
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="flex items-center">
                                             <div class="flex-shrink-0 h-10 w-10">
-                                                <img class="h-10 w-10 rounded-full object-cover" 
+                                                <!-- <img class="h-10 w-10 rounded-full object-cover" 
                                                     src="{{ asset('assets/images/product/' . $detail->product->thumbnail) }}" 
                                                     alt="{{ $detail->product->name }}">
-                                            </div>
+                                            </div> -->
                                             <div class="ml-4">
                                                 <div class="text-sm font-medium text-gray-900">{{ $detail->product->name }}</div>
                                             </div>

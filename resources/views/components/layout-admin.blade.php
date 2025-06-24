@@ -17,11 +17,14 @@
             <div class="flex items-center gap-4">
                 <input type="text" placeholder="Tìm kiếm..." class="px-3 py-2 rounded-lg text-gray-200">
                 <a href="#" class="flex items-center gap-2 hover:text-gray-200">
-                    <i class="fa fa-user"></i> Đỗ Dương Phi
+                    <i class="fa fa-user"></i> {{ Auth::user()->name }}
                 </a>
-                <a href="#" class="flex items-center gap-2 hover:text-gray-200">
-                    <i class="fa fa-power-off"></i> Đăng xuất
-                </a>
+                <form method="POST" action="{{ route('logout') }}" class="inline">
+                    @csrf
+                    <button type="submit" class="flex items-center gap-2 hover:text-gray-200">
+                        <i class="fa fa-power-off"></i> Đăng xuất
+                    </button>
+                </form>
             </div>
         </div>
     </header>
@@ -35,6 +38,8 @@
                         <li><a href="{{route('product.index')}}" class="block px-3 py-1 rounded-md hover:bg-blue-600">Sản phẩm</a></li>
                         <li><a href="{{route('category.index')}}" class="block px-3 py-1 rounded-md hover:bg-blue-600">Danh mục</a></li>
                         <li><a href="{{route('brand.index')}}" class="block px-3 py-1 rounded-md hover:bg-blue-600">Thương hiệu</a></li>
+                        <li><a href="{{route('productsale.index')}}" class="block px-3 py-1 rounded-md hover:bg-blue-600">Sản phẩm khuyến mãi</a></li>
+                        <li><a href="{{route('revenue.index')}}" class="block px-3 py-1 rounded-md hover:bg-blue-600">Thống kê doanh thu</a></li>
                     </ul>
                 </li>
                 <li>
@@ -50,7 +55,6 @@
                 <li><a class="block p-3 rounded-lg  hover:bg-blue-900" href="{{route('order.index')}}">Đơn hàng</a></li>
                 <li><a class="block p-3 rounded-lg  hover:bg-blue-900" href="{{route('user.index')}}">Khách hàng</a></li>
                 <li><a class="block p-3 rounded-lg  hover:bg-blue-900" href="{{route('feedback.index')}}">Đánh Giá</a></li>
-                <li><a class="block p-3 rounded-lg  hover:bg-blue-900" href="#">Thành viên</a></li>
             </ul>
         </aside>
         <section class="w-4/5 p-6 bg-white shadow-md rounded-lg m-4">

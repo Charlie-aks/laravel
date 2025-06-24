@@ -3,7 +3,7 @@
     <div class="container mx-auto px-4 py-8">
         <div class="flex justify-between items-center mb-6">
             <h1 class="text-2xl font-bold">Chỉnh sửa đơn hàng #{{ $order->id }}</h1>
-            <a href="{{ route('admin.orders.index') }}" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded">Quay lại</a>
+            <a href="{{ route('admin.order.index') }}" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded">Quay lại</a>
         </div>
 
         @if(session('success'))
@@ -23,7 +23,7 @@
         @endif
 
         <div class="bg-white p-6 rounded-lg shadow-md">
-            <form action="{{ route('admin.orders.update', $order->id) }}" method="POST">
+            <form action="{{ route('admin.order.update', $order->id) }}" method="POST">
                 @csrf
                 @method('PUT')
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">

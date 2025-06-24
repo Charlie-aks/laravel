@@ -50,56 +50,41 @@ class ProductController extends Controller
 
     public function store(StoreProductRequest $request)
     {
-        $slug = Str::slug($request->name);
-        $originalSlug = $slug;
-        $counter = 1;
-        while (Product::where('slug', $slug)->exists()) {
-            $slug = $originalSlug . '-' . $counter++;
-        }
-
         $product = new Product();
         $product->name = $request->name;
         $product->detail = $request->detail;
         $product->description = $request->description;
         $product->price_root = $request->price_root;
-        $product->status = $request->status;
         $product->category_id = $request->category_id;
         $product->brand_id = $request->brand_id;
-        $product->slug = $slug;
-        $product->created_by = Auth::id() ?? 1;
+        $product->status = $request->status;
+        $product->slug = Str::slug($request->name);
+        $product->created_by = Auth::id();
         $product->save();
 
-        if($request->hasFile('thumbnail')) {
-            foreach($request->file('thumbnail') as $file) {
-                $filename = time() . '_' . $file->getClientOriginalName();
-                $file->move(public_path('assets/images/product'), $filename);
+        // Create initial store record
+        Productstore::create([
+            'product_id' => $product->id,
+            'qty' => 0,
+            'price_root' => $request->price_root,
+            'created_by' => Auth::id(),
+            'status' => 1
+        ]);
 
-                ProductImage::create([
+        // Handle image uploads
+        if ($request->hasFile('thumbnail')) {
+            foreach ($request->file('thumbnail') as $image) {
+                $imageName = time() . '_' . $image->getClientOriginalName();
+                $image->move(public_path('assets/images/product'), $imageName);
+                
+                Productimage::create([
                     'product_id' => $product->id,
-                    'thumbnail' => $filename,
+                    'thumbnail' => $imageName
                 ]);
             }
         }
 
-        ProductStore::create([
-            'product_id' => $product->id,
-            'qty' => $request->qty,
-            'price_root' => $product->price_root,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
-        if ($request->has('price_sale')) {
-            ProductSale::create([
-                'product_id' => $product->id,
-                'price_sale' => $request->price_sale,
-                'date_begin' => now(),
-                'date_end' => now()->addDays(30),
-                'created_by' => Auth::id() ?? 1,
-            ]);
-        }
-
-        return redirect()->route('product.index')->with('success', 'Sản phẩm đã được thêm thành công!');
+        return redirect()->route('product.index')->with('success', 'Thêm sản phẩm thành công');
     }
 
     public function edit(string $id)
@@ -308,5 +293,40 @@ class ProductController extends Controller
             return response()->json(['success' => true]);
         }
         return response()->json(['success' => false], 404);
+    }
+
+    public function storeManagement($id)
+    {
+        $product = Product::with('store')->findOrFail($id);
+        $storeHistory = Productstore::where('product_id', $id)
+            ->orderBy('created_at', 'desc')
+            ->get();
+        
+        return view('backend.product.store', compact('product', 'storeHistory'));
+    }
+
+    public function updateStore(Request $request, $id)
+    {
+        $request->validate([
+            'qty' => 'required|integer|min:0',
+            'price_root' => 'required|numeric|min:0',
+        ]);
+
+        $store = Productstore::where('product_id', $id)->first();
+        
+        if (!$store) {
+            $store = new Productstore();
+            $store->product_id = $id;
+            $store->created_by = Auth::id();
+            $store->status = 1;
+        }
+
+        $store->qty = $request->qty;
+        $store->price_root = $request->price_root;
+        $store->updated_by = Auth::id();
+        $store->save();
+
+        return redirect()->route('product.store', ['product' => $id])
+            ->with('success', 'Cập nhật thông tin kho thành công');
     }
 }

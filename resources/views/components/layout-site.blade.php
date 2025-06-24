@@ -86,10 +86,35 @@
               <span class="relative after:absolute after:left-0 after:bottom-[-2px] after:w-0 after:h-[2px] after:bg-orange-200 after:transition-all after:duration-300 hover:after:w-full">Cart</span>
               <x-cart-count />
             </a>
-            <form method="POST" action="{{ route('logout') }}">
+            @auth
+              @if(Auth::user()->roles === 'admin')
+                <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-1 px-2 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600 transition-colors">
+                  <i class="fas fa-user-shield text-xs"></i>
+                  <span>Quản lý</span>
+                </a>
+              @else
+                <a href="#" onclick="alert('Bạn không có quyền truy cập trang quản trị!'); return false;" class="flex items-center gap-1 px-2 py-1 bg-gray-300 text-gray-600 rounded text-sm cursor-not-allowed">
+                  <i class="fas fa-user-lock text-xs"></i>
+                  <span>Quản lý</span>
+                </a>
+              @endif
+              <form method="POST" action="{{ route('logout') }}" class="inline">
               @csrf
-              <button type="submit" class="text-red-500 hover:underline">Đăng xuất</button>
+                <button type="submit" class="flex items-center gap-1 px-2 py-1 bg-red-500 text-white rounded text-sm hover:bg-red-600 transition-colors">
+                  <i class="fas fa-sign-out-alt text-xs"></i>
+                  <span>Đăng xuất</span>
+                </button>
           </form>
+            @else
+              <a href="{{ route('login') }}" class="flex items-center gap-1 px-2 py-1 bg-green-500 text-white rounded text-sm hover:bg-green-600 transition-colors">
+                <i class="fas fa-sign-in-alt text-xs"></i>
+                <span>Đăng nhập</span>
+              </a>
+              <a href="{{ route('register') }}" class="flex items-center gap-1 px-2 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600 transition-colors">
+                <i class="fas fa-user-plus text-xs"></i>
+                <span>Đăng ký</span>
+              </a>
+            @endauth
           </div>
         </div>
       </div>

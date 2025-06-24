@@ -50,7 +50,7 @@ class CheckoutController extends Controller
                 'note' => $request->note,
                 'status' => 1, // 1: Chờ xử lý
                 'payment_method' => $request->payment_method,
-                'total_amount' => array_sum(array_map(function($item) { 
+                'amount' => array_sum(array_map(function($item) { 
                     return $item['price'] * $item['quantity']; 
                 }, $cart)),
             ];
@@ -82,7 +82,7 @@ class CheckoutController extends Controller
             // Nếu là thanh toán VNPay, chuyển hướng đến trang thanh toán
             if ($request->payment_method == 'vnpay') {
                 return redirect()->route('payment.create', [
-                    'amount' => $order->total_amount,
+                    'amount' => $order->amount,
                     'order_id' => $order->id
                 ]);
             }

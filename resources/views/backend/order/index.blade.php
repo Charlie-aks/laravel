@@ -41,20 +41,21 @@
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $order->email }}</td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                                    @if($order->status == 'completed') bg-green-100 text-green-800
-                                    @elseif($order->status == 'processing') bg-blue-100 text-blue-800
-                                    @elseif($order->status == 'cancelled') bg-red-100 text-red-800
+                                    @if($order->status == 2) bg-green-100 text-green-800
+                                    @elseif($order->status == 1) bg-blue-100 text-blue-800
+                                    @elseif($order->status == 3) bg-red-100 text-red-800
                                     @else bg-yellow-100 text-yellow-800
                                     @endif">
-                                    @if($order->status == 'pending') Chờ xử lý
-                                    @elseif($order->status == 'processing') Đang xử lý
-                                    @elseif($order->status == 'completed') Hoàn thành
-                                    @elseif($order->status == 'cancelled') Đã hủy
+                                    @if($order->status == 0) Chờ xử lý
+                                    @elseif($order->status == 1) Đang giao
+                                    @elseif($order->status == 2) Đã giao
+                                    @elseif($order->status == 3) Đã hủy
                                     @endif
                                 </span>
                             </td>
+
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                {{ number_format($order->total_amount, 0, ',', '.') }}₫
+                                {{ number_format($order->amount, 0, ',', '.') }}₫
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                 {{ $order->created_at->format('d/m/Y H:i') }}

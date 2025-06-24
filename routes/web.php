@@ -26,6 +26,8 @@ use App\Models\Feedback;
 use App\Http\Controllers\frontend\CheckoutController;
 use App\Http\Controllers\frontend\PaymentController;
 use App\Http\Controllers\backend\StatisticController;
+use App\Http\Controllers\backend\RevenueController;
+
 
 Route::get('/',[HomeController::class, 'index'])->name('site.home');
 Route::get('/san-pham',[SanphamProduct::class, 'index'])->name('site.product');
@@ -51,7 +53,7 @@ Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-Route::prefix('admin')->group(function() {
+Route::prefix('admin')->middleware(['auth', 'admin'])->group(function() {
     Route::get('/', [DashboardController::class,'index'])->name('admin.dashboard');
     Route::prefix('product')->group(function(){
         Route::get('trash',[ProductController::class,'trash'])->name('product.trash');
@@ -59,6 +61,8 @@ Route::prefix('admin')->group(function() {
         Route::get('restore/{product}',[ProductController::class,'restore'])->name('product.restore');
         Route::get('status/{product}',[ProductController::class,'status'])->name('product.status');
         Route::get('search',[ProductController::class,'search'])->name('product.search');
+        Route::get('{product}/store',[ProductController::class,'storeManagement'])->name('product.store');
+        Route::put('{product}/store',[ProductController::class,'updateStore'])->name('product.store.update');
     });
     Route::resource('product',ProductController::class);
 
@@ -159,6 +163,9 @@ Route::prefix('admin')->group(function() {
     Route::get('/post/status/{post}', [PostController::class, 'status'])->name('post.status');
 
     Route::delete('/admin/product/image/{id}', [ProductController::class, 'deleteImage'])->name('product.image.delete');
+    Route::get('/revenue', [RevenueController::class, 'index'])->name('revenue.index');
+
+
 }); 
 
 

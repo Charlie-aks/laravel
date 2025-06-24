@@ -3,7 +3,7 @@
     <div class="container mx-auto px-4 py-8">
         <div class="flex justify-between items-center mb-6">
             <h1 class="text-2xl font-bold">Chi tiết đơn hàng #{{ $order->id }}</h1>
-            <a href="{{ route('admin.orders.index') }}" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded">Quay lại</a>
+            <a href="{{ route('admin.order.index') }}" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded">Quay lại</a>
         </div>
 
         @if(session('success'))
@@ -20,7 +20,7 @@
                     <div>
                         <label class="block text-sm font-medium text-gray-700">Trạng thái</label>
                         <div class="mt-1">
-                            <form action="{{ route('admin.orders.updateStatus', $order->id) }}" method="POST" class="flex items-center space-x-4">
+                            <form action="{{ route('admin.order.updateStatus', $order->id) }}" method="POST" class="flex items-center space-x-4">
                                 @csrf
                                 <select name="status" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
                                     <option value="0" {{ $order->status == 0 ? 'selected' : '' }}>Chờ xác nhận</option>

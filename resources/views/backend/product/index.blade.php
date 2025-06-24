@@ -65,6 +65,9 @@
                                onclick="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này?')">
                                 <i class="fa fa-trash text-2xl text-red-400" aria-hidden="true"></i>
                             </a>
+                            <a href="{{ url('admin/product/'.$item->id.'/store') }}" class="inline-block">
+                                <i class="fa fa-warehouse text-2xl text-purple-400" aria-hidden="true"></i>
+                            </a>
                         </td>
                     </tr>
                     @endforeach
