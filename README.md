@@ -75,9 +75,3 @@ php artisan migrate
 npm run dev
 php artisan serve
 ```
-
-## Đóng góp
-Mọi đóng góp đều được hoan nghênh. Vui lòng đọc [Hướng dẫn đóng góp](CONTRIBUTING.md) để biết thêm chi tiết.
-
-## Giấy phép
-Ứng dụng này được phát hành dưới giấy phép MIT. Xem file [LICENSE](LICENSE) để biết thêm chi tiết.
