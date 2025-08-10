@@ -53,6 +53,24 @@
                                     <div class="text-red-500">{{$errors->first('price_root')}}</div>
                                 @endif
                             </div>
+                            <div class="mb-3">
+                                <label id="price_sale">
+                                    <strong>Giá khuyến mãi</strong>
+                                </label>
+                                <input value="{{old('price_sale',100)}}" type="number" class="w-full border border-gray-300 rounded-lg p-2" placeholder="Giá khuyến mãi" name="price_sale" id="price_sale">
+                                @if($errors->has('price_sale'))
+                                <div class="text-red-500">{{$errors->first('price_sale')}}</div>
+                            @endif
+                            </div>
+                            <div class="mb-3">
+                                <label id="qty">
+                                    <strong>Số lượng</strong>
+                                </label>
+                                <input value="{{old('qty')}}" type="number" class="w-full border border-gray-300 rounded-lg p-2" value="1" name="qty" min="1" id="qty">
+                                @if($errors->has('qty'))
+                                <div class="text-red-500">{{$errors->first('qty')}}</div>
+                                @endif
+                            </div>
                         </div>
                     </div>
                     <div class="basis-3/12">
